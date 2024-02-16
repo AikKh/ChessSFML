@@ -3,6 +3,8 @@
 
 class Dragger {
 public:
+	Dragger(const Validator& validator) : _validator(validator) {};
+
 	void PressedAt(Vector2u position, Board& board) {
 		if (board[position].HasValue()) {
 			_selected = true;
@@ -17,20 +19,20 @@ public:
 		board[_selectedPosition].GetValue().SetSpritePosition(positionPx);
 	}
 
-	void ReleasedAt(Vector2u position, Board& board, const Validator& validator) {
+	bool ReleasedAt(Vector2u position, Board& board) {
 		if (!_selected)
-			return;
+			return false;
 
 		_selected = false;
 
 		Move move(_selectedPosition, position);
 
-		if (VectorExtentions::InBounds(position) && validator.Validate(move, board)) {
+		if (VectorExtentions::InBounds(position) && _validator.Validate(move, board)) {
 			board.MoveFigure(move);
+			return true;
 		}
-		else {
-			board[_selectedPosition].GetValue().SetSpritePosition(VectorExtentions::Unnormalize(_selectedPosition));
-		}
+		board[_selectedPosition].GetValue().SetSpritePosition(VectorExtentions::Unnormalize(_selectedPosition));
+		return false;
 	}
 
 	Vector2u GetSelected() const {
@@ -44,4 +46,6 @@ public:
 private:
 	bool _selected = false;
 	Vector2u _selectedPosition;
+
+	const Validator& _validator;
 };

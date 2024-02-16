@@ -4,11 +4,13 @@
 #include <iostream>
 #include <unordered_map>
 #include <functional>
+#include <tuple>
 
 using std::string;
 using std::unordered_map;
 using std::vector;
 using std::function;
+using std::tuple;
 
 #include <SFML/Graphics.hpp>
 

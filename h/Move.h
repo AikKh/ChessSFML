@@ -1,5 +1,5 @@
 #pragma once
-#include "Square.h"
+#include "Loader.h"
 
 struct Move {
 	Move(Vector2u start, Vector2u end) : Start(start), End(end) {};

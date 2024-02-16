@@ -2,9 +2,12 @@
 #include "Validator.h"
 
 class Drawer {
-    // TODO: Make this look not like a static class
-
 public:
+    Drawer() : circle(radius, 20), square(sf::Vector2f(SquareSize, SquareSize)) {
+        square.setFillColor(Cyan);
+        circle.setFillColor(Grey);
+    }
+
     void DrawFigures(Board& board, RenderWindow& window) const {
         for (int i = 0; i < SquareCount; ++i) {
             for (int j = 0; j < SquareCount; ++j) {
@@ -31,27 +34,34 @@ public:
         }
     }
 
-    void DrawSelected(Vector2u selected, RenderWindow& window) const {
-        // Refactor this part
-
-        static const float radius = 10.0f;
-        static sf::CircleShape circle(radius, 20);
-        static sf::RectangleShape square(sf::Vector2f(SquareSize, SquareSize));
-
-        square.setFillColor(Cyan);
-        circle.setFillColor(Grey);
-
-        auto pos = VectorExtentions::Unnormalize(selected);
+    void DrawSelected(Vector2u selectedPos, RenderWindow& window) {
+        auto pos = VectorExtentions::Unnormalize(selectedPos);
         
         square.setPosition(pos);
-        circle.setPosition(VectorExtentions::Add(pos, SquareSize / 2.0f - radius));
-
         window.draw(square);
-        window.draw(circle);
+    }
+
+    void MarkPossibleMoves(const Square& selectedSquare, RenderWindow& window) {
+        AvailableMoves moves = selectedSquare.GetMoves();
+
+        for (const auto& move : moves) {
+            circle.setPosition(CenterCircle(VectorExtentions::Unnormalize(move.End), radius));
+            window.draw(circle);
+        }
     }
 
 private:
-    static const Color GetSquareColor(int x, int y) {
+    static Color GetSquareColor(int x, int y) {
         return (x + y) % 2 == 0 ? Light : Dark;
     }
+
+    inline static Vector2f CenterCircle(Vector2f position, float radius) {
+        return VectorExtentions::Add(position, SquareSize / 2.0f - radius);
+    }
+
+private:
+    const float radius = 10.0f;
+
+    sf::CircleShape circle;
+    sf::RectangleShape square;
 };

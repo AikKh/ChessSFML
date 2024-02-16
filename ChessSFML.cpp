@@ -2,14 +2,14 @@
 
 int main()
 {
-    Drawer drawer = Drawer();
-    Dragger dragger = Dragger();
 
     Selector* selector = new ClassicSelector();
+    Validator* validator = new AdvancedValidator();
     
-    Validator* validator = new AdvancedValidator(*selector);
+    Dragger dragger = Dragger(*validator);
+    Drawer drawer = Drawer();
 
-    Game game("Chess", drawer, dragger, *validator);
+    Game game("Chess", drawer, dragger, *selector);
     game.Run();
 
     delete validator;

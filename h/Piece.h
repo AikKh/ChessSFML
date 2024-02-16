@@ -1,12 +1,16 @@
 #pragma once
-#include "Loader.h"
+#include "AvailableMoves.h"
 
 using namespace Constants;
 
 class Piece {
 public:
 	Piece() = default;
-	Piece(PieceType type) : _type(type) {};
+	Piece(PieceColor color, PieceType type) : _color(color), _type(type) {};
+
+	PieceColor GetColor() const {
+		return _color;
+	}
 
 	PieceType GetType() const {
 		return _type;
@@ -24,34 +28,17 @@ public:
 		_sprite.setPosition(position);
 	}
 
-	string ToString() {
-		switch (_type) {
-			case W_King:   return "White King";
-			case W_Queen:  return "White Queen";
-			case W_Rook:   return "White Rook";
-			case W_Bishop: return "White Bishop";
-			case W_Knight: return "White Knight";
-			case W_Pawn:   return "White Pawn";
-			case B_King:   return "Black King";
-			case B_Queen:  return "Black Queen";
-			case B_Rook:   return "Black Rook";
-			case B_Bishop: return "Black Bishop";
-			case B_Knight: return "Black Knight";
-			case B_Pawn:   return "Black Pawn";
-			default:       return "Unknown Piece";
-		}
-	}
+	static Piece CreatePiece(PieceColor color, PieceType type, int x, int y) {
+		Piece piece(color, type);
 
-	static Piece CreatePiece(PieceType type, int x, int y) {
-		Piece piece(type);
-
-		piece.SetTexture(Loader::TextureMapper.at(type));
+		piece.SetTexture(Loader::GetTexture(color, type));
 		piece.SetSpritePosition(Vector2f(x * SquareSize, y * SquareSize));
 
 		return piece;
 	}
 
 private:
+	PieceColor _color;
 	PieceType _type;
 	Sprite _sprite;
 };

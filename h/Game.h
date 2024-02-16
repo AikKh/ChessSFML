@@ -3,10 +3,11 @@
 
 class Game {
 public:
-	Game(string title, const Drawer& drawer, Dragger& dragger, const Validator& validator)
-        :  _window(VideoMode(BoardSize, BoardSize), title), _drawer(drawer), _dragger(dragger), _validator(validator) {
+	Game(string title, Drawer& drawer, Dragger& dragger, const Selector& selector)
+        :  _window(VideoMode(BoardSize, BoardSize), title), _drawer(drawer), _dragger(dragger), _selector(selector) {
         
         _board.InitBoard();
+        UpdateBoard();
     }
 
 	void Run() {
@@ -25,7 +26,10 @@ private:
         _drawer.DrawBoard(_window);
 
         if (_dragger.Selected()) {
-            _drawer.DrawSelected(_dragger.GetSelected(), _window);
+            Vector2u selected = _dragger.GetSelected();
+
+            _drawer.DrawSelected(selected, _window);
+            _drawer.MarkPossibleMoves(_board[selected], _window);
         }
 
         _drawer.DrawFigures(_board, _window);
@@ -55,13 +59,6 @@ private:
         }
     }
 
-    void HandleRelease(const Event& event)
-    {
-        if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
-            _dragger.ReleasedAt(VectorExtentions::Normalize(GetMousePosition()), _board, _validator);
-        }
-    }
-
     void HandleMoving()
     {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
@@ -69,12 +66,52 @@ private:
         }
     }
 
+    void HandleRelease(const Event& event)
+    {
+        if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+            if (_dragger.ReleasedAt(VectorExtentions::Normalize(GetMousePosition()), _board)) {
+                UpdateBoard();
+            }
+        }
+    }
+
+    void UpdateBoard() const {
+        for (int i = 0; i < SquareCount; i++)
+        {
+            for (int j = 0; j < SquareCount; j++)
+            {
+                auto position = Vector2u(j, i);
+
+                Square& square = _board[position];
+
+                if (!square.HasValue())
+                    continue;
+
+                square.SetMoves(_selector.GetFigureMoves(position, _board));
+            }
+        }
+    }
+
     inline Vector2i GetMousePosition() {
         return sf::Mouse::getPosition(_window);
     }
 
+    // Move to extentions
     inline static Vector2f Centered(Vector2i position) {
         return Vector2f(position.x - SquareSize / 2, position.y - SquareSize / 2);
+    }
+
+    void DrawBoard() const {
+        for (int i = 0; i < SquareCount; i++)
+        {
+            for (int j = 0; j < SquareCount; j++)
+            {
+                auto position = Vector2u(j, i);
+                Square& square = _board[position];
+                cout << square.HasValue() << " ";
+            }
+            cout << "\n";
+        }
     }
 
 private:
@@ -82,8 +119,8 @@ private:
 	RenderWindow _window;
 
     Dragger& _dragger;
-    const Drawer& _drawer;
-    const Validator& _validator;
+    Drawer& _drawer;
+    const Selector& _selector;
 };
 
 

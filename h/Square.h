@@ -21,17 +21,20 @@ public:
 	}
 
 	Piece& GetValue() {
-		if (!_hasValue)
+		if (!_hasValue) {
+			std::cerr << "Square doesn't have a value" << endl;
 			throw std::exception("Square doesn't have a value");
+		}
 
 		return _value;
 	}
 
-	Square& operator=(const Square& other) {
-		_value = other._value;
-		_hasValue = other._hasValue;
+	const AvailableMoves& GetMoves() const {
+		return _moves;
+	}
 
-		return *this;
+	void SetMoves(AvailableMoves moves) {
+		_moves = moves;
 	}
 
 	Square& operator=(Square&& other) noexcept {
@@ -48,4 +51,6 @@ public:
 private:
 	bool _hasValue;
 	Piece _value;
+
+	AvailableMoves _moves;
 };

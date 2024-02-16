@@ -1,5 +1,5 @@
 #pragma once
-#include "AvailableMoves.h"
+#include "Square.h"
 
 class Board {
 public:
@@ -13,37 +13,36 @@ public:
 
     void InitBoard() {
         
+#define ADD_FIGURE(y, x, color, type) _board[y][x] = Square(Piece::CreatePiece(color, type, x, y));
 
-#define ADD_FIGURE(y, x, type) _board[y][x] = Square(Piece::CreatePiece(type, x, y));
+        ADD_FIGURE(0, 0, Black, Rook);
+        ADD_FIGURE(0, 7, Black, Rook);
+        ADD_FIGURE(7, 0, White, Rook);
+        ADD_FIGURE(7, 7, White, Rook);
 
-        ADD_FIGURE(0, 0, B_Rook);
-        ADD_FIGURE(0, 7, B_Rook);
-        ADD_FIGURE(7, 0, W_Rook);
-        ADD_FIGURE(7, 7, W_Rook);
+        ADD_FIGURE(0, 1, Black, Knight);
+        ADD_FIGURE(0, 6, Black, Knight);
+        ADD_FIGURE(7, 1, White, Knight);
+        ADD_FIGURE(7, 6, White, Knight);
 
-        ADD_FIGURE(0, 1, B_Knight);
-        ADD_FIGURE(0, 6, B_Knight);
-        ADD_FIGURE(7, 1, W_Knight);
-        ADD_FIGURE(7, 6, W_Knight);
+        ADD_FIGURE(0, 2, Black, Bishop);
+        ADD_FIGURE(0, 5, Black, Bishop);
+        ADD_FIGURE(7, 2, White, Bishop);
+        ADD_FIGURE(7, 5, White, Bishop);
 
-        ADD_FIGURE(0, 2, B_Bishop);
-        ADD_FIGURE(0, 5, B_Bishop);
-        ADD_FIGURE(7, 2, W_Bishop);
-        ADD_FIGURE(7, 5, W_Bishop);
+        ADD_FIGURE(0, 3, Black, Queen);
+        ADD_FIGURE(7, 3, White, Queen);
 
-        ADD_FIGURE(0, 3, B_Queen);
-        ADD_FIGURE(7, 3, W_Queen);
-
-        ADD_FIGURE(0, 4, B_King);
-        ADD_FIGURE(7, 4, W_King);
+        ADD_FIGURE(0, 4, Black, King);
+        ADD_FIGURE(7, 4, White, King);
 
 #undef ADD_FIGURE
 
 
         for (int i = 0; i < SquareCount; i++)
         {
-            _board[1][i] = Square(Piece::CreatePiece(B_Pawn, i, 1));
-            _board[6][i] = Square(Piece::CreatePiece(W_Pawn, i, 6));
+            _board[1][i] = Square(Piece::CreatePiece(Black, Pawn, i, 1));
+            _board[6][i] = Square(Piece::CreatePiece(White, Pawn, i, 6));
         }
     }
 
@@ -55,7 +54,7 @@ public:
         exit(EXIT_FAILURE);
     }
 
-    void MoveFigure(Move move) {
+    void MoveFigure(Move move) const {
         this->operator[](move.End) = std::move(this->operator[](move.Start));
         this->operator[](move.End).SetFigurePosition(move.End);
     }

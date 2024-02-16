@@ -15,12 +15,10 @@ public:
 
 class AdvancedValidator : public Validator {
 public:
-	AdvancedValidator(const Selector& selector) : _selector(selector) {}
-
 	bool Validate(Move move, const Board& board) const override {
 		Square& square = board[move.Start];
 
-		AvailableMoves moves = _selector.PawnMoves(move.Start, square);
+		AvailableMoves moves = square.GetMoves();
 
 		for (auto& m : moves) {
 			if (move.End == m.End) {
@@ -30,7 +28,4 @@ public:
 
 		return false;
 	};
-
-private:
-	const Selector& _selector;
 };
